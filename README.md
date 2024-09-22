@@ -1,1 +1,1 @@
-# test-aws-lambda
+# test-serverless
