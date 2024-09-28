@@ -12,14 +12,19 @@ export const handler = async (event) => {
     throw new Error("Loại sự kiện không hợp lệ");
   }
 
-  console.log("Token:", token);
+  console.log("Token:", token);r
 
   // Kiểm tra token
-  if (token === "This is my Token") {
+  if (checkToken(token)) {
     return generatePolicy("user", "Allow", event.methodArn);
   } else {
     return generatePolicy("user", "Deny", event.methodArn);
   }
+};
+
+const checkToken = (token) => {
+  // Kiểm tra token với secret key
+  return token === "This is my Token";
 };
 
 // Hàm tạo policy

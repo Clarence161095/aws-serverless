@@ -1,0 +1,24 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+    commands:
+      - echo Installing AWS SAM CLI
+      - pip3 install --upgrade pip
+      - pip3 install aws-sam-cli
+  pre_build:
+    commands:
+      - echo Pre-build phase started
+      - sam --version
+  build:
+    commands:
+      - sam build
+      - sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --capabilities CAPABILITY_IAM
+
+artifacts:
+  type: zip
+  files:
+    - template.yaml
+    - packaged.yaml

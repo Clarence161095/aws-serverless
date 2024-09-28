@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: S3 Lambda SQS Application
+
+Globals:
+  Function:
+    Timeout: 30
+    Runtime: nodejs18.x
+
+Resources:
+  RcBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: rc-bucket-name
+
+  AcBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ac-bucket-name
+
+  SQSQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: my-sqs-queue
+
+  RcLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/handlers/
+      Handler: rcHandler.handler
+      Events:
+        S3Event:
+          Type: S3
+          Properties:
+            Bucket: !Ref RcBucket
+            Events: s3:ObjectCreated:*
+
+  AcLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/handlers/
+      Handler: acHandler.handler
+      Events:
+        S3Event:
+          Type: S3
+          Properties:
+            Bucket: !Ref AcBucket
+            Events: s3:ObjectCreated:*
+
+Outputs:
+  RcBucketName:
+    Description: "RC S3 bucket name"
+    Value: !Ref RcBucket
+  AcBucketName:
+    Description: "AC S3 bucket name"
+    Value: !Ref AcBucket
+  SQSQueueUrl:
+    Description: "SQS Queue URL"
+    Value: !Ref SQSQueue
+  RcLambdaFunction:
+    Description: "RC Lambda Function ARN"
+    Value: !GetAtt RcLambdaFunction.Arn
+  AcLambdaFunction:
+    Description: "AC Lambda Function ARN"
+    Value: !GetAtt AcLambdaFunction.Arn
